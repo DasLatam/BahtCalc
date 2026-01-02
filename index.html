@@ -12,99 +12,118 @@
     
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .card { background: white; padding: 30px 25px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; margin-bottom: auto; }
         
-        h1 { margin: 0 0 5px; color: #222; font-size: 26px; letter-spacing: -0.5px; }
+        .card { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; margin-bottom: auto; }
+        
+        h1 { margin: 0 0 5px; color: #222; font-size: 24px; letter-spacing: -0.5px; }
         .subtitle { color: #888; font-size: 13px; margin-bottom: 25px; display: block; font-weight: 500;}
 
-        /* INPUT PRINCIPAL */
-        .input-group { margin-bottom: 25px; text-align: left; }
-        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input[type="text"], input[type="number"] { 
-            width: 100%; padding: 16px; 
-            font-size: 34px; /* Tamaño grande */
-            border: 2px solid #eee; border-radius: 16px; 
-            box-sizing: border-box; outline: none; transition: all 0.2s; 
-            font-weight: 800; color: #333; text-align: center;
+        /* ESTILO DE FILAS (Label izquierda - Input derecha) */
+        .currency-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 16px;
+            border: 1px solid #eef0f2;
+            margin-bottom: 15px;
+            transition: border-color 0.2s, background 0.2s;
         }
-        input:focus { border-color: #0056b3; background: #f8fbff; }
 
-        /* RESULTADOS (Ahora uno debajo del otro para que quepan los números grandes) */
-        .results { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
-        
-        .result-box { 
-            background: #f8f9fa; padding: 15px 20px; 
-            border-radius: 16px; border: 1px solid #eef0f2; 
-            display: flex; justify-content: space-between; align-items: center;
+        .currency-row:focus-within {
+            border-color: #0056b3;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,86,179,0.1);
+        }
+
+        .label-col {
+            text-align: left;
+            min-width: 80px;
         }
         
-        /* Etiquetas alineadas a la izquierda */
-        .result-box small { 
-            color: #888; font-size: 14px; text-transform: uppercase; font-weight: 700; 
-            min-width: 50px; text-align: left;
+        .label-col span { font-size: 24px; margin-right: 5px; vertical-align: middle; }
+        .label-col b { display: block; font-size: 14px; color: #666; font-weight: 700; }
+
+        input[type="text"] { 
+            width: 100%; 
+            border: none; 
+            background: transparent;
+            font-size: 28px; 
+            font-weight: 800; 
+            color: #333; 
+            text-align: right;
+            outline: none;
+            padding: 5px;
+            font-variant-numeric: tabular-nums; /* Alinea los números mejor */
         }
         
-        /* Números alineados a la derecha y MUY GRANDES */
-        .result-box strong { 
-            font-size: 34px; font-weight: 800; text-align: right; white-space: nowrap;
-        }
-        
-        .blue { color: #0056b3 !important; }
-        .green { color: #28a745 !important; }
+        /* Colores específicos para diferenciar */
+        #inputTHB { color: #333; }
+        #inputUSD { color: #28a745; }
+        #inputARS { color: #0056b3; }
 
         /* BOTONES */
-        .btn-row { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
+        .btn-row { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
         .action-link { color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; background: none; border: none; padding: 0;}
         
-        /* CONFIGURACIÓN */
+        /* AJUSTES */
         #settings { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; text-align: left; }
         .setting-row { margin-bottom: 15px; }
-        .setting-row input { font-size: 20px; padding: 12px; height: auto; text-align: left; font-weight: normal;}
-        .btn-save { width: 100%; background: #0056b3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
+        .setting-row label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: 600; }
+        .setting-row input { 
+            font-size: 18px; padding: 10px; border: 1px solid #ddd; 
+            border-radius: 8px; text-align: left; width: 100%; background: #fff;
+        }
+        .btn-save { width: 100%; background: #0056b3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
 
         /* FOOTER */
         footer { margin-top: 30px; text-align: center; color: #999; width: 100%; max-width: 380px; }
-        .dev-legend { font-size: 12px; margin-bottom: 15px; }
         .social-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; }
-        .social-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; text-decoration: none; transition: transform 0.2s; font-size: 18px;}
+        .social-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; text-decoration: none; font-size: 18px;}
         .contact-btn { background: #0056b3; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block; box-shadow: 0 4px 10px rgba(0,86,179,0.2); }
+        .dev-legend { font-size: 12px; margin-bottom: 15px; margin-top: 15px;}
     </style>
 </head>
 <body>
     <div class="card">
         <h1>🇹🇭 BahtCalc</h1>
-        <span class="subtitle">Calculadora de Cambio Baht - Tailandia</span>
+        <span class="subtitle">Calculadora Multidivisa</span>
         
-        <div class="input-group">
-            <label>Monto en THB</label>
-            <input type="text" id="thbInput" placeholder="0" inputmode="decimal" autocomplete="off" autofocus>
+        <div class="currency-row">
+            <div class="label-col">
+                <span>🇹🇭</span> <b>THB</b>
+            </div>
+            <input type="text" id="inputTHB" placeholder="0" inputmode="decimal" autocomplete="off">
         </div>
 
-        <div class="results">
-            <div class="result-box">
-                <small>🇺🇸 USD</small>
-                <strong id="usdResult" class="green">$0.00</strong>
+        <div class="currency-row">
+            <div class="label-col">
+                <span>🇺🇸</span> <b>USD</b>
             </div>
-            <div class="result-box">
-                <small>🇦🇷 ARS</small>
-                <strong id="arsResult" class="blue">$0</strong>
+            <input type="text" id="inputUSD" placeholder="0" inputmode="decimal" autocomplete="off">
+        </div>
+
+        <div class="currency-row">
+            <div class="label-col">
+                <span>🇦🇷</span> <b>ARG</b>
             </div>
+            <input type="text" id="inputARS" placeholder="0" inputmode="decimal" autocomplete="off">
         </div>
 
         <div class="btn-row">
-            <button class="action-link" onclick="toggleSettings()">⚙️ Ajustar Cambio</button>
+            <button class="action-link" onclick="toggleSettings()">⚙️ Ajustar Cotización</button>
             <button class="action-link" onclick="shareApp()">🔗 Compartir</button>
         </div>
 
         <div id="settings">
             <div class="setting-row">
                 <label>1 USD = ? ARS (Blue/Tarjeta)</label>
-                <input type="text" id="rateArs" inputmode="decimal" placeholder="Ej: 1200">
+                <input type="number" id="rateArs" placeholder="Ej: 1200">
             </div>
             <div class="setting-row">
                 <label>1 USD = ? THB (Casa de Cambio)</label>
-                <input type="text" id="rateThb" inputmode="decimal" placeholder="Ej: 34">
+                <input type="number" id="rateThb" placeholder="Ej: 34">
             </div>
             <button class="btn-save" onclick="saveSettings()">Guardar Preferencias</button>
         </div>
@@ -112,69 +131,107 @@
 
     <footer>
         <div class="social-links">
-            <a href="https://x.com/BahtCalc" target="_blank" class="social-btn" aria-label="X (Twitter)">𝕏</a>
+            <a href="https://x.com/BahtCalc" target="_blank" class="social-btn" aria-label="X">𝕏</a>
             <a href="https://instagram.com/BahtCalc" target="_blank" class="social-btn" aria-label="Instagram">📷</a>
         </div>
         <a href="mailto:BahtCalc@daslatam.org" class="contact-btn">Contáctanos</a>
-        <p class="dev-legend">
-            Desarrollado por <strong>BahtCalc@daslatam.org</strong><br>
-            © 2024 BahtCalc App
-        </p>
+        <p class="dev-legend">Desarrollado por <strong>BahtCalc@daslatam.org</strong></p>
     </footer>
 
     <script>
-        // CONFIGURACIÓN INICIAL
-        let rateArs = localStorage.getItem('rateArs') || 1200; 
-        let rateThb = localStorage.getItem('rateThb') || 34;
+        // --- VARIABLES DE ESTADO ---
+        let rateArs = parseFloat(localStorage.getItem('rateArs')) || 1200; 
+        let rateThb = parseFloat(localStorage.getItem('rateThb')) || 34;
 
         document.getElementById('rateArs').value = rateArs;
         document.getElementById('rateThb').value = rateThb;
 
-        const thbInput = document.getElementById('thbInput');
-        const usdResult = document.getElementById('usdResult');
-        const arsResult = document.getElementById('arsResult');
+        const inputTHB = document.getElementById('inputTHB');
+        const inputUSD = document.getElementById('inputUSD');
+        const inputARS = document.getElementById('inputARS');
 
-        // PARSEO DE NÚMEROS (Manejo de comas y puntos)
-        function parseLocalFloat(val) {
+        // --- FORMATO ARGENTINO: 1.000,50 ---
+        
+        // 1. Convierte String (1.200,50) a Numero JS (1200.50) para calcular
+        function parseArgNumber(val) {
             if (!val) return 0;
-            // Reemplazar comas por puntos y eliminar cualquier cosa que no sea número
-            let cleanVal = val.toString().replace(/,/g, '.').replace(/[^\d.]/g, '');
-            return parseFloat(cleanVal) || 0;
+            // Elimina puntos de miles y cambia coma decimal por punto
+            let clean = val.toString().replace(/\./g, '').replace(/,/g, '.');
+            return parseFloat(clean) || 0;
         }
 
-        // CÁLCULO
-        function calculate() {
-            const thb = parseLocalFloat(thbInput.value);
-            const rThb = parseLocalFloat(document.getElementById('rateThb').value);
-            const rArs = parseLocalFloat(document.getElementById('rateArs').value);
+        // 2. Convierte Numero JS (1200.50) a String Argentina (1.200,50) para mostrar
+        const formatter = new Intl.NumberFormat('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
 
-            if(rThb === 0) return; // Evitar error div/0
+        // 3. Formateador simple sin decimales forzados (para mientras escribes si quisieras)
+        // Usamos el de arriba para los campos pasivos (los que se calculan)
 
-            const usd = thb / rThb;
-            const ars = usd * rArs;
+        // --- LOGICA DE CALCULO ---
 
-            usdResult.textContent = `$${usd.toFixed(2)}`;
-            arsResult.textContent = `$${Math.round(ars).toLocaleString('es-AR')}`;
+        function updateFromTHB() {
+            const thb = parseArgNumber(inputTHB.value);
+            if (thb === 0) { inputUSD.value = ""; inputARS.value = ""; return; }
+            
+            const usd = thb / rateThb;
+            const ars = usd * rateArs;
+
+            // Actualizamos los otros inputs con formato lindo
+            inputUSD.value = formatter.format(usd);
+            inputARS.value = formatter.format(ars);
         }
 
-        thbInput.addEventListener('input', calculate);
+        function updateFromUSD() {
+            const usd = parseArgNumber(inputUSD.value);
+            if (usd === 0) { inputTHB.value = ""; inputARS.value = ""; return; }
 
-        // CONFIGURACIÓN UI
+            const thb = usd * rateThb;
+            const ars = usd * rateArs;
+
+            inputTHB.value = formatter.format(thb);
+            inputARS.value = formatter.format(ars);
+        }
+
+        function updateFromARS() {
+            const ars = parseArgNumber(inputARS.value);
+            if (ars === 0) { inputTHB.value = ""; inputUSD.value = ""; return; }
+
+            const usd = ars / rateArs;
+            const thb = usd * rateThb;
+
+            inputUSD.value = formatter.format(usd);
+            inputTHB.value = formatter.format(thb);
+        }
+
+        // --- LISTENERS ---
+        // Usamos 'keyup' o 'input'. 'input' es mejor para móviles.
+        
+        inputTHB.addEventListener('input', () => updateFromTHB());
+        inputUSD.addEventListener('input', () => updateFromUSD());
+        inputARS.addEventListener('input', () => updateFromARS());
+
+        // --- AJUSTES UI ---
         function toggleSettings() {
             const settings = document.getElementById('settings');
             settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
         }
 
         function saveSettings() {
-            const valArs = document.getElementById('rateArs').value;
-            const valThb = document.getElementById('rateThb').value;
-            localStorage.setItem('rateArs', valArs);
-            localStorage.setItem('rateThb', valThb);
-            calculate();
+            rateArs = parseFloat(document.getElementById('rateArs').value);
+            rateThb = parseFloat(document.getElementById('rateThb').value);
+            
+            localStorage.setItem('rateArs', rateArs);
+            localStorage.setItem('rateThb', rateThb);
+            
+            // Recalcular basado en el último campo que tenga datos
+            if(inputTHB.value) updateFromTHB();
+            else if (inputARS.value) updateFromARS();
+            
             toggleSettings();
         }
 
-        // COMPARTIR
         function shareApp() {
             if (navigator.share) {
                 navigator.share({ title: 'BahtCalc', url: 'https://BahtCalc.vercel.app' }).catch(console.error);
@@ -184,7 +241,6 @@
             }
         }
 
-        // SERVICE WORKER
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }

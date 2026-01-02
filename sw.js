@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baht-calc-v5'; // <--- VERSIÓN 5
+const CACHE_NAME = 'baht-calc-v6'; // <--- VERSIÓN 6
 const urlsToCache = [
   './',
   './index.html',
