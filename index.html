@@ -6,19 +6,35 @@
     <title>BahtCalc</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0056b3">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/206/206626.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/197/197452.png">
     
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .card { background: white; padding: 30px 25px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; margin-bottom: auto; }
         
         h1 { margin: 0 0 5px; color: #222; font-size: 26px; letter-spacing: -0.5px; }
-        .subtitle { color: #888; font-size: 13px; margin-bottom: 25px; display: block;}
+        .subtitle { color: #888; font-size: 13px; margin-bottom: 25px; display: block; font-weight: 500;}
 
-        .input-group { margin-bottom: 25px; text-align: left; }
-        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        input[type="number"] { width: 100%; padding: 16px; font-size: 32px; border: 2px solid #eee; border-radius: 16px; box-sizing: border-box; outline: none; transition: all 0.2s; font-weight: bold; color: #333; }
-        input[type="number"]:focus { border-color: #0056b3; background: #f8fbff; }
+        /* Contenedor del Input con Micrófono */
+        .input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;}
+        
+        input[type="text"], input[type="number"] { 
+            width: 100%; padding: 16px; padding-right: 50px; /* Espacio para el mic */
+            font-size: 32px; border: 2px solid #eee; border-radius: 16px; 
+            box-sizing: border-box; outline: none; transition: all 0.2s; 
+            font-weight: bold; color: #333; 
+        }
+        input:focus { border-color: #0056b3; background: #f8fbff; }
+
+        /* Botón de Micrófono */
+        .mic-btn {
+            position: absolute; right: 10px; bottom: 10px; top: 38px;
+            background: none; border: none; font-size: 24px; cursor: pointer;
+            color: #aaa; transition: color 0.3s;
+        }
+        .mic-btn.listening { color: #dc3545; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         .results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
         .result-box { background: #f8f9fa; padding: 15px; border-radius: 16px; border: 1px solid #eef0f2; }
@@ -27,35 +43,30 @@
         .blue { color: #0056b3 !important; }
         .green { color: #28a745 !important; }
 
-        /* Botones y Configuración */
         .btn-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .action-link { color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; background: none; border: none; padding: 0;}
         
-        #settings { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; text-align: left; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
+        #settings { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; text-align: left; }
         .setting-row { margin-bottom: 15px; }
         .setting-row input { font-size: 18px; padding: 10px; height: auto; }
         .btn-save { width: 100%; background: #0056b3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
-        .btn-save:active { transform: scale(0.98); }
 
-        /* Footer y Contacto */
         footer { margin-top: 30px; text-align: center; color: #999; width: 100%; max-width: 380px; }
         .dev-legend { font-size: 12px; margin-bottom: 15px; }
         .social-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; }
         .social-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; text-decoration: none; transition: transform 0.2s; font-size: 18px;}
-        .social-btn:hover { transform: translateY(-3px); color: #0056b3; }
         .contact-btn { background: #0056b3; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block; box-shadow: 0 4px 10px rgba(0,86,179,0.2); }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>🇹🇭 BahtCalc</h1>
-        <span class="subtitle">Calculadora de Viaje Rápida</span>
+        <span class="subtitle">Calculadora de Cambio Baht - Tailandia</span>
         
-        <div class="input-group">
+        <div class="input-wrapper">
             <label>Monto en THB</label>
-            <input type="number" id="thbInput" placeholder="0" inputmode="decimal" autofocus>
+            <input type="text" id="thbInput" placeholder="0" inputmode="decimal" autofocus autocomplete="off">
+            <button class="mic-btn" onclick="startListening()" id="micBtn" title="Dictar monto">🎙️</button>
         </div>
 
         <div class="results">
@@ -77,11 +88,11 @@
         <div id="settings">
             <div class="setting-row">
                 <label>1 USD = ? ARS (Blue/Tarjeta)</label>
-                <input type="number" id="rateArs" placeholder="Ej: 1200">
+                <input type="text" id="rateArs" inputmode="decimal" placeholder="Ej: 1200">
             </div>
             <div class="setting-row">
                 <label>1 USD = ? THB (Casa de Cambio)</label>
-                <input type="number" id="rateThb" placeholder="Ej: 34">
+                <input type="text" id="rateThb" inputmode="decimal" placeholder="Ej: 34">
             </div>
             <button class="btn-save" onclick="saveSettings()">Guardar Preferencias</button>
         </div>
@@ -102,7 +113,7 @@
     </footer>
 
     <script>
-        // Lógica de la calculadora
+        // --- 1. CONFIGURACIÓN INICIAL ---
         let rateArs = localStorage.getItem('rateArs') || 1200; 
         let rateThb = localStorage.getItem('rateThb') || 34;
 
@@ -113,47 +124,108 @@
         const usdResult = document.getElementById('usdResult');
         const arsResult = document.getElementById('arsResult');
 
+        // --- 2. LÓGICA DE CÁLCULO ---
+        function parseLocalFloat(val) {
+            if (!val) return 0;
+            // Reemplaza coma por punto para que JS entienda el decimal
+            // Elimina cualquier caracter que no sea numero, punto o coma
+            let cleanVal = val.toString().replace(/,/g, '.');
+            return parseFloat(cleanVal) || 0;
+        }
+
         function calculate() {
-            const thb = parseFloat(thbInput.value) || 0;
-            const usd = thb / rateThb;
-            const ars = usd * rateArs;
+            const thb = parseLocalFloat(thbInput.value);
+            const rThb = parseLocalFloat(document.getElementById('rateThb').value);
+            const rArs = parseLocalFloat(document.getElementById('rateArs').value);
+
+            // Evitar división por cero
+            if(rThb === 0) return;
+
+            const usd = thb / rThb;
+            const ars = usd * rArs;
 
             usdResult.textContent = `$${usd.toFixed(2)}`;
             arsResult.textContent = `$${Math.round(ars).toLocaleString('es-AR')}`;
         }
 
+        thbInput.addEventListener('input', calculate);
+
+        // --- 3. RECONOCIMIENTO DE VOZ ---
+        function startListening() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Tu navegador no soporta dictado por voz.");
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            const micBtn = document.getElementById('micBtn');
+
+            recognition.lang = 'es-ES'; // Reconoce español
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                micBtn.classList.add('listening');
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript;
+                // Intenta limpiar el texto para dejar solo números (ej: "mil" -> 1000 es difícil sin librería, 
+                // pero si dicen "500" funciona. Google suele convertir texto a número automaticamente)
+                
+                // Quitamos texto para dejar numeros, comas y puntos
+                let numericMatch = speechResult.replace(/[^0-9.,]/g, ''); 
+                
+                // Si el reconocimiento devuelve palabras (ej: "cien"), esto requeriría una librería más pesada.
+                // Asumimos que el usuario dicta el número o el sistema lo convierte.
+                if (numericMatch) {
+                    thbInput.value = numericMatch;
+                    calculate();
+                } else {
+                    // Fallback simple: ponemos lo que escuchó aunque tenga texto, el usuario corrige
+                    thbInput.value = speechResult;
+                }
+            };
+
+            recognition.start();
+        }
+
+        // --- 4. CONFIGURACIÓN Y PWA ---
         function toggleSettings() {
             const settings = document.getElementById('settings');
             settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
         }
 
         function saveSettings() {
-            rateArs = parseFloat(document.getElementById('rateArs').value);
-            rateThb = parseFloat(document.getElementById('rateThb').value);
-            localStorage.setItem('rateArs', rateArs);
-            localStorage.setItem('rateThb', rateThb);
+            // Guardamos tal cual está en el input (texto) para mantener formato
+            const valArs = document.getElementById('rateArs').value;
+            const valThb = document.getElementById('rateThb').value;
+            
+            localStorage.setItem('rateArs', valArs);
+            localStorage.setItem('rateThb', valThb);
+            
             calculate();
             toggleSettings();
         }
 
-        // Función para compartir
         function shareApp() {
             if (navigator.share) {
                 navigator.share({
                     title: 'BahtCalc',
-                    text: 'Calculadora rápida de Baht a Pesos y Dólares para Tailandia',
+                    text: 'Calculadora de Cambio Baht - Tailandia',
                     url: 'https://BahtCalc.vercel.app'
                 }).catch(console.error);
             } else {
-                // Fallback para navegadores viejos: copiar al portapapeles
                 navigator.clipboard.writeText('https://BahtCalc.vercel.app');
-                alert('¡Link copiado al portapapeles!');
+                alert('¡Link copiado!');
             }
         }
 
-        thbInput.addEventListener('input', calculate);
-
-        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
