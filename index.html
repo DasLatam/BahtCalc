@@ -6,7 +6,9 @@
     <title>BahtCalc</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0056b3">
+    
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/197/197452.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197452.png">
     
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
@@ -15,42 +17,53 @@
         h1 { margin: 0 0 5px; color: #222; font-size: 26px; letter-spacing: -0.5px; }
         .subtitle { color: #888; font-size: 13px; margin-bottom: 25px; display: block; font-weight: 500;}
 
-        /* Contenedor del Input con Micrófono */
-        .input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
-        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;}
+        /* INPUT PRINCIPAL */
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
         input[type="text"], input[type="number"] { 
-            width: 100%; padding: 16px; padding-right: 50px; /* Espacio para el mic */
-            font-size: 32px; border: 2px solid #eee; border-radius: 16px; 
+            width: 100%; padding: 16px; 
+            font-size: 34px; /* Tamaño grande */
+            border: 2px solid #eee; border-radius: 16px; 
             box-sizing: border-box; outline: none; transition: all 0.2s; 
-            font-weight: bold; color: #333; 
+            font-weight: 800; color: #333; text-align: center;
         }
         input:focus { border-color: #0056b3; background: #f8fbff; }
 
-        /* Botón de Micrófono */
-        .mic-btn {
-            position: absolute; right: 10px; bottom: 10px; top: 38px;
-            background: none; border: none; font-size: 24px; cursor: pointer;
-            color: #aaa; transition: color 0.3s;
+        /* RESULTADOS (Ahora uno debajo del otro para que quepan los números grandes) */
+        .results { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+        
+        .result-box { 
+            background: #f8f9fa; padding: 15px 20px; 
+            border-radius: 16px; border: 1px solid #eef0f2; 
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .mic-btn.listening { color: #dc3545; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .result-box { background: #f8f9fa; padding: 15px; border-radius: 16px; border: 1px solid #eef0f2; }
-        .result-box small { display: block; color: #888; font-size: 11px; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;}
-        .result-box strong { display: block; font-size: 20px; color: #333; }
+        
+        /* Etiquetas alineadas a la izquierda */
+        .result-box small { 
+            color: #888; font-size: 14px; text-transform: uppercase; font-weight: 700; 
+            min-width: 50px; text-align: left;
+        }
+        
+        /* Números alineados a la derecha y MUY GRANDES */
+        .result-box strong { 
+            font-size: 34px; font-weight: 800; text-align: right; white-space: nowrap;
+        }
+        
         .blue { color: #0056b3 !important; }
         .green { color: #28a745 !important; }
 
-        .btn-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
-        .action-link { color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; background: none; border: none; padding: 0;}
+        /* BOTONES */
+        .btn-row { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
+        .action-link { color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; background: none; border: none; padding: 0;}
         
+        /* CONFIGURACIÓN */
         #settings { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; text-align: left; }
         .setting-row { margin-bottom: 15px; }
-        .setting-row input { font-size: 18px; padding: 10px; height: auto; }
+        .setting-row input { font-size: 20px; padding: 12px; height: auto; text-align: left; font-weight: normal;}
         .btn-save { width: 100%; background: #0056b3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
 
+        /* FOOTER */
         footer { margin-top: 30px; text-align: center; color: #999; width: 100%; max-width: 380px; }
         .dev-legend { font-size: 12px; margin-bottom: 15px; }
         .social-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; }
@@ -63,26 +76,25 @@
         <h1>🇹🇭 BahtCalc</h1>
         <span class="subtitle">Calculadora de Cambio Baht - Tailandia</span>
         
-        <div class="input-wrapper">
+        <div class="input-group">
             <label>Monto en THB</label>
-            <input type="text" id="thbInput" placeholder="0" inputmode="decimal" autofocus autocomplete="off">
-            <button class="mic-btn" onclick="startListening()" id="micBtn" title="Dictar monto">🎙️</button>
+            <input type="text" id="thbInput" placeholder="0" inputmode="decimal" autocomplete="off" autofocus>
         </div>
 
         <div class="results">
             <div class="result-box">
-                <small>🇺🇸 USD (Aprox)</small>
+                <small>🇺🇸 USD</small>
                 <strong id="usdResult" class="green">$0.00</strong>
             </div>
             <div class="result-box">
-                <small>🇦🇷 ARS (Estimado)</small>
+                <small>🇦🇷 ARS</small>
                 <strong id="arsResult" class="blue">$0</strong>
             </div>
         </div>
 
         <div class="btn-row">
             <button class="action-link" onclick="toggleSettings()">⚙️ Ajustar Cambio</button>
-            <button class="action-link" onclick="shareApp()">🔗 Compartir App</button>
+            <button class="action-link" onclick="shareApp()">🔗 Compartir</button>
         </div>
 
         <div id="settings">
@@ -103,9 +115,7 @@
             <a href="https://x.com/BahtCalc" target="_blank" class="social-btn" aria-label="X (Twitter)">𝕏</a>
             <a href="https://instagram.com/BahtCalc" target="_blank" class="social-btn" aria-label="Instagram">📷</a>
         </div>
-        
         <a href="mailto:BahtCalc@daslatam.org" class="contact-btn">Contáctanos</a>
-        
         <p class="dev-legend">
             Desarrollado por <strong>BahtCalc@daslatam.org</strong><br>
             © 2024 BahtCalc App
@@ -113,7 +123,7 @@
     </footer>
 
     <script>
-        // --- 1. CONFIGURACIÓN INICIAL ---
+        // CONFIGURACIÓN INICIAL
         let rateArs = localStorage.getItem('rateArs') || 1200; 
         let rateThb = localStorage.getItem('rateThb') || 34;
 
@@ -124,22 +134,21 @@
         const usdResult = document.getElementById('usdResult');
         const arsResult = document.getElementById('arsResult');
 
-        // --- 2. LÓGICA DE CÁLCULO ---
+        // PARSEO DE NÚMEROS (Manejo de comas y puntos)
         function parseLocalFloat(val) {
             if (!val) return 0;
-            // Reemplaza coma por punto para que JS entienda el decimal
-            // Elimina cualquier caracter que no sea numero, punto o coma
-            let cleanVal = val.toString().replace(/,/g, '.');
+            // Reemplazar comas por puntos y eliminar cualquier cosa que no sea número
+            let cleanVal = val.toString().replace(/,/g, '.').replace(/[^\d.]/g, '');
             return parseFloat(cleanVal) || 0;
         }
 
+        // CÁLCULO
         function calculate() {
             const thb = parseLocalFloat(thbInput.value);
             const rThb = parseLocalFloat(document.getElementById('rateThb').value);
             const rArs = parseLocalFloat(document.getElementById('rateArs').value);
 
-            // Evitar división por cero
-            if(rThb === 0) return;
+            if(rThb === 0) return; // Evitar error div/0
 
             const usd = thb / rThb;
             const ars = usd * rArs;
@@ -150,82 +159,32 @@
 
         thbInput.addEventListener('input', calculate);
 
-        // --- 3. RECONOCIMIENTO DE VOZ ---
-        function startListening() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Tu navegador no soporta dictado por voz.");
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            const micBtn = document.getElementById('micBtn');
-
-            recognition.lang = 'es-ES'; // Reconoce español
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            recognition.onstart = function() {
-                micBtn.classList.add('listening');
-            };
-
-            recognition.onend = function() {
-                micBtn.classList.remove('listening');
-            };
-
-            recognition.onresult = function(event) {
-                const speechResult = event.results[0][0].transcript;
-                // Intenta limpiar el texto para dejar solo números (ej: "mil" -> 1000 es difícil sin librería, 
-                // pero si dicen "500" funciona. Google suele convertir texto a número automaticamente)
-                
-                // Quitamos texto para dejar numeros, comas y puntos
-                let numericMatch = speechResult.replace(/[^0-9.,]/g, ''); 
-                
-                // Si el reconocimiento devuelve palabras (ej: "cien"), esto requeriría una librería más pesada.
-                // Asumimos que el usuario dicta el número o el sistema lo convierte.
-                if (numericMatch) {
-                    thbInput.value = numericMatch;
-                    calculate();
-                } else {
-                    // Fallback simple: ponemos lo que escuchó aunque tenga texto, el usuario corrige
-                    thbInput.value = speechResult;
-                }
-            };
-
-            recognition.start();
-        }
-
-        // --- 4. CONFIGURACIÓN Y PWA ---
+        // CONFIGURACIÓN UI
         function toggleSettings() {
             const settings = document.getElementById('settings');
             settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
         }
 
         function saveSettings() {
-            // Guardamos tal cual está en el input (texto) para mantener formato
             const valArs = document.getElementById('rateArs').value;
             const valThb = document.getElementById('rateThb').value;
-            
             localStorage.setItem('rateArs', valArs);
             localStorage.setItem('rateThb', valThb);
-            
             calculate();
             toggleSettings();
         }
 
+        // COMPARTIR
         function shareApp() {
             if (navigator.share) {
-                navigator.share({
-                    title: 'BahtCalc',
-                    text: 'Calculadora de Cambio Baht - Tailandia',
-                    url: 'https://BahtCalc.vercel.app'
-                }).catch(console.error);
+                navigator.share({ title: 'BahtCalc', url: 'https://BahtCalc.vercel.app' }).catch(console.error);
             } else {
                 navigator.clipboard.writeText('https://BahtCalc.vercel.app');
                 alert('¡Link copiado!');
             }
         }
 
+        // SERVICE WORKER
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
