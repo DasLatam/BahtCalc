@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BahtCalc</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/206/206626.png">
+    
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: white; padding: 30px 25px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; margin-bottom: auto; }
+        
+        h1 { margin: 0 0 5px; color: #222; font-size: 26px; letter-spacing: -0.5px; }
+        .subtitle { color: #888; font-size: 13px; margin-bottom: 25px; display: block;}
+
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        input[type="number"] { width: 100%; padding: 16px; font-size: 32px; border: 2px solid #eee; border-radius: 16px; box-sizing: border-box; outline: none; transition: all 0.2s; font-weight: bold; color: #333; }
+        input[type="number"]:focus { border-color: #0056b3; background: #f8fbff; }
+
+        .results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .result-box { background: #f8f9fa; padding: 15px; border-radius: 16px; border: 1px solid #eef0f2; }
+        .result-box small { display: block; color: #888; font-size: 11px; margin-bottom: 4px; text-transform: uppercase; font-weight: 600;}
+        .result-box strong { display: block; font-size: 20px; color: #333; }
+        .blue { color: #0056b3 !important; }
+        .green { color: #28a745 !important; }
+
+        /* Botones y Configuración */
+        .btn-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .action-link { color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; background: none; border: none; padding: 0;}
+        
+        #settings { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; text-align: left; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .setting-row { margin-bottom: 15px; }
+        .setting-row input { font-size: 18px; padding: 10px; height: auto; }
+        .btn-save { width: 100%; background: #0056b3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
+        .btn-save:active { transform: scale(0.98); }
+
+        /* Footer y Contacto */
+        footer { margin-top: 30px; text-align: center; color: #999; width: 100%; max-width: 380px; }
+        .dev-legend { font-size: 12px; margin-bottom: 15px; }
+        .social-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; }
+        .social-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #333; text-decoration: none; transition: transform 0.2s; font-size: 18px;}
+        .social-btn:hover { transform: translateY(-3px); color: #0056b3; }
+        .contact-btn { background: #0056b3; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block; box-shadow: 0 4px 10px rgba(0,86,179,0.2); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🇹🇭 BahtCalc</h1>
+        <span class="subtitle">Calculadora de Viaje Rápida</span>
+        
+        <div class="input-group">
+            <label>Monto en THB</label>
+            <input type="number" id="thbInput" placeholder="0" inputmode="decimal" autofocus>
+        </div>
+
+        <div class="results">
+            <div class="result-box">
+                <small>🇺🇸 USD (Aprox)</small>
+                <strong id="usdResult" class="green">$0.00</strong>
+            </div>
+            <div class="result-box">
+                <small>🇦🇷 ARS (Estimado)</small>
+                <strong id="arsResult" class="blue">$0</strong>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="action-link" onclick="toggleSettings()">⚙️ Ajustar Cambio</button>
+            <button class="action-link" onclick="shareApp()">🔗 Compartir App</button>
+        </div>
+
+        <div id="settings">
+            <div class="setting-row">
+                <label>1 USD = ? ARS (Blue/Tarjeta)</label>
+                <input type="number" id="rateArs" placeholder="Ej: 1200">
+            </div>
+            <div class="setting-row">
+                <label>1 USD = ? THB (Casa de Cambio)</label>
+                <input type="number" id="rateThb" placeholder="Ej: 34">
+            </div>
+            <button class="btn-save" onclick="saveSettings()">Guardar Preferencias</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://x.com/BahtCalc" target="_blank" class="social-btn" aria-label="X (Twitter)">𝕏</a>
+            <a href="https://instagram.com/BahtCalc" target="_blank" class="social-btn" aria-label="Instagram">📷</a>
+        </div>
+        
+        <a href="mailto:BahtCalc@daslatam.org" class="contact-btn">Contáctanos</a>
+        
+        <p class="dev-legend">
+            Desarrollado por <strong>BahtCalc@daslatam.org</strong><br>
+            © 2024 BahtCalc App
+        </p>
+    </footer>
+
+    <script>
+        // Lógica de la calculadora
+        let rateArs = localStorage.getItem('rateArs') || 1200; 
+        let rateThb = localStorage.getItem('rateThb') || 34;
+
+        document.getElementById('rateArs').value = rateArs;
+        document.getElementById('rateThb').value = rateThb;
+
+        const thbInput = document.getElementById('thbInput');
+        const usdResult = document.getElementById('usdResult');
+        const arsResult = document.getElementById('arsResult');
+
+        function calculate() {
+            const thb = parseFloat(thbInput.value) || 0;
+            const usd = thb / rateThb;
+            const ars = usd * rateArs;
+
+            usdResult.textContent = `$${usd.toFixed(2)}`;
+            arsResult.textContent = `$${Math.round(ars).toLocaleString('es-AR')}`;
+        }
+
+        function toggleSettings() {
+            const settings = document.getElementById('settings');
+            settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function saveSettings() {
+            rateArs = parseFloat(document.getElementById('rateArs').value);
+            rateThb = parseFloat(document.getElementById('rateThb').value);
+            localStorage.setItem('rateArs', rateArs);
+            localStorage.setItem('rateThb', rateThb);
+            calculate();
+            toggleSettings();
+        }
+
+        // Función para compartir
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'BahtCalc',
+                    text: 'Calculadora rápida de Baht a Pesos y Dólares para Tailandia',
+                    url: 'https://BahtCalc.vercel.app'
+                }).catch(console.error);
+            } else {
+                // Fallback para navegadores viejos: copiar al portapapeles
+                navigator.clipboard.writeText('https://BahtCalc.vercel.app');
+                alert('¡Link copiado al portapapeles!');
+            }
+        }
+
+        thbInput.addEventListener('input', calculate);
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
